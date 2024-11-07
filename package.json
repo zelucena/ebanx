@@ -1,0 +1,16 @@
+{
+  "name": "ebanx",
+  "version": "1.0.0",
+  "description": "Ebanx evaluation test",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "jest"
+  },
+  "author": "José Lucena",
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0"
+  }
+}
