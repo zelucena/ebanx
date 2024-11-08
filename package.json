@@ -4,6 +4,7 @@
   "description": "Ebanx evaluation test",
   "main": "index.js",
   "scripts": {
+    "prod": "NODE_ENV=production pm2 start index.js --name=ebanx_test",
     "start": "node index.js",
     "test": "jest"
   },

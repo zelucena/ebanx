@@ -1,12 +1,12 @@
-const AccountVolatileRepository = require('./AccountVolatileRepository.js')
-const { AccountNotFound, InvalidEvent } = require('../../Exceptions')
+const { getRepository } = require('../../repository')
+const { AccountNotFound, InvalidEvent } = require('../../exceptions')
 
 exports.reset = () => {
-  AccountVolatileRepository.reset()
+  getRepository().Account.reset()
 }
 
 exports.getBalance = (accountNumber) => {
-  const balance = AccountVolatileRepository.retrieve(accountNumber)
+  const balance = getRepository().Account.retrieve(accountNumber)
 
   if (balance === undefined) {
     throw new AccountNotFound()
@@ -42,31 +42,31 @@ exports.processEvent = (payload) => {
 }
 
 const withdraw = (origin, amount) => {
-  const currentBalance = AccountVolatileRepository.retrieve(origin)
+  const currentBalance = getRepository().Account.retrieve(origin)
   if (currentBalance === undefined) {
     throw new AccountNotFound()
   }
   const newBalance = currentBalance - amount
-  AccountVolatileRepository.store(origin, newBalance)
+  getRepository().Account.store(origin, newBalance)
 
   return { 'origin': { 'id': origin, 'balance': newBalance } }
 }
 
 const deposit = (destination, amount) => {
-  const currentBalance = AccountVolatileRepository.retrieve(destination)
+  const currentBalance = getRepository().Account.retrieve(destination)
   if (currentBalance === undefined) {
-    AccountVolatileRepository.store(destination, amount)
+    getRepository().Account.store(destination, amount)
     return { 'destination': { id: destination, balance: amount } }
   }
   const newBalance = currentBalance + amount
-  AccountVolatileRepository.store(destination, newBalance)
+  getRepository().Account.store(destination, newBalance)
   return {
     'destination': { id: destination, balance: newBalance },
   }
 }
 
 const transfer = (origin, amount, destination) => {
-  const originBalance = AccountVolatileRepository.retrieve(origin)
+  const originBalance = getRepository().Account.retrieve(origin)
   if (originBalance === undefined) {
     throw new AccountNotFound()
   }

@@ -1,11 +1,21 @@
-const AccountVolatileRepository = require('./AccountVolatileRepository.js')
-const { AccountNotFound } = require('../../Exceptions')
+const { AccountNotFound } = require('../../exceptions')
+const repository = require('../../repository')
 
 const AccountService = require('./AccountService')
+/**
+ * Tests the business login in AccountService
+ * Attempt to be the least coupled possible yet
+ * being useful at testing behavior and correctness
+ */
 describe('test AccountService', () => {
   beforeEach(() => {
-    AccountVolatileRepository.accounts = new Map()
+    repository.getRepository().Account.reset()
   })
+
+  afterEach(() => {
+    jest.restoreAllMocks()
+  })
+
   test('should reset', () => {
     expect(AccountService.reset()).toBeUndefined()
   })
@@ -15,7 +25,8 @@ describe('test AccountService', () => {
   })
 
   test('should get balance for existing account', () => {
-    AccountVolatileRepository.accounts.set('100', 10)
+    const mockRepository = jest.spyOn(repository, 'getRepository')
+    mockRepository().Account._accounts.set('100', 10)
     expect(AccountService.getBalance('100')).toEqual(10)
   })
 
@@ -26,7 +37,8 @@ describe('test AccountService', () => {
   })
 
   test('should deposit into exising account', () => {
-    AccountVolatileRepository.accounts.set('100', 10)
+    const mockRepository = jest.spyOn(repository, 'getRepository')
+    mockRepository().Account._accounts.set('100', 10)
     const event = { 'type': 'deposit', 'destination': '100', 'amount': 10 }
     const expectedOutput = { 'destination': { 'id': '100', 'balance': 20 } }
 
@@ -34,13 +46,13 @@ describe('test AccountService', () => {
   })
 
   test('should fail to retrieve from non-existing account', () => {
-    // AccountVolatileRepository.accounts.set('100', 20)
     const event = { 'type': 'withdraw', 'origin': '200', 'amount': 5 }
     expect(() => AccountService.processEvent(event)).toThrow(AccountNotFound)
   })
 
   test('should withdraw from existing account', () => {
-    AccountVolatileRepository.accounts.set('100', 20)
+    const mockRepository = jest.spyOn(repository, 'getRepository')
+    mockRepository().Account._accounts.set('100', 20)
     const event = { 'type': 'withdraw', 'origin': '100', 'amount': 5 }
     const expectedOutput = { 'origin': { 'id': '100', 'balance': 15 } }
     expect(AccountService.processEvent(event)).toMatchObject(expectedOutput)
@@ -52,7 +64,8 @@ describe('test AccountService', () => {
   })
 
   test('should transfer from existing account', () => {
-    AccountVolatileRepository.accounts.set('100', 15)
+    const mockRepository = jest.spyOn(repository, 'getRepository')
+    mockRepository().Account._accounts.set('100', 15)
     const event = { 'type': 'transfer', 'origin': '100', 'amount': 15, 'destination': '300' }
     const expectedOutput = { 'origin': { 'id': '100', 'balance': 0 }, 'destination': { 'id': '300', 'balance': 15 } }
 

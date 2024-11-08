@@ -1,3 +1,3 @@
-const { runServer } = require('./server.js')
+const { runServer } = require('./infrastructure/httpServer.js')
 
 runServer()

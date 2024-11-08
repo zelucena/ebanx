@@ -1,6 +1,11 @@
-const { runServer } = require('./server')
+const { runServer } = require('../../infrastructure/httpServer')
 const request = require('supertest')
 
+/**
+ * tests the account module as if calling the API endpoints
+ * Ensures that payload is parsed in and out correctly
+ * Should respond with proper encoding and status codes
+ */
 describe('Test account module', () => {
   const supertest = request.agent(runServer())
 
